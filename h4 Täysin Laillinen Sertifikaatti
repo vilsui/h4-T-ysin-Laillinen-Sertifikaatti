@@ -96,3 +96,5 @@ hain työpöydälle tallenetun certin, ja täppä kohtaan "Trust this CA to iden
 Proxy asetusten säätö firefoxissa hoitui "Settings" kohdasta "proxy", josta määritettiin manual proxy configuration. HTTP proxy kohtaan 127.0.0.1 ja kohtaan port 8080 ja
 vielä täppä ruutuun "Also use this proxy for HTTPS". Tämän jälkeen viimeinen kohta olikin kun osoiterivin about:config asetuksesta käytiin muuttamassa network.proxy.allow_hijacking_localhost
 kohta booleanin "true"-ksi. 
+
+
