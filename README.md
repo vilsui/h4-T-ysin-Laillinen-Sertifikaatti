@@ -132,9 +132,14 @@ jonka jälkeen tarkistin ZAP'ista että se näkyy siellä ja löytyi
 
 Tässä haavoittuvuus johtuu siitä, että web-sovellus ottaa käyttäjän (tässä tapauksessa selaimen) lähettämän tiedostonimen vastaan ja käyttää sitä suoraan osana palvelimen sisäistä hakemistopolkua. Palvelin ei tarkista tai validoi syötettä millään tavalla (esim. estämällä polunvaihtomerkit), eikä se rajoita tiedostojen lukuoikeuksia pelkästään sallittuun tuotekuvakansioon. Testasin haavoittuvuutta muokkaamalla filename-parametrin arvoksi ../../../etc/passwd ja lähetin pyynnön eteenpäin. Merkkiyhdistelmä käskee palvelimen käyttöjärjestelmää siirtymään hakemistopuussa yhden tason ylöspäin. Toistamalla näitä merkkejä tarpeeksi monta kertaa hyökkääjä pääsee ulos web-palvelimen julkisesta hakemistosta ja voi lukea järjestelmätiedostoja. ZAPin Response-ikkunasta näin, että kuvan sijaan palvelin palautti pyyntööni Linux-palvelimen arkaluonteisen /etc/passwd -käyttäjätiedoston sisällön.
 
+Lähteet: https://portswigger.net/web-security/file-path-traversal/lab-simple
+
+
 G) File path traversal, traversal sequences blocked with absolute path bypass
 
 Tässä web-sovellus ottaa käyttäjän (Nyt selaimen) lähettämän tiedostonimen vastaan ja käyttää sitä suoraan osana palvelimen sisäistä tiedostopolkua. Palvelin koittaa estää tavalliset ../-tyyppiset "path traversal -sekvenssit", mutta suojaus ei estä absoluuttisen tiedstopolun käyttämistä. Seurattuani portswiggerin ohjeistusta löysin haavoittuvuuden ZAPilla tuotteen kuvan lataamiseen liittyvää pyyntöä, jossa filename-parametrin arvona oli esimerkiksi 29.jpg jonka tässäkin pystyi taklaamaan muuttamalla filename=/etc/passwd. Muokkasin ZAPin Requesterissa parametrin arvonja lähetin pyynnön uudelleen. Palvelin hyväksyi absoluuttisen polun ja palautti kuvan sijaan Linux-palvelimen /etc/passwd-tiedoston sisällön. Tämän perusteella palvelin ei rajoita tiedostojen lukemista ainoastaan sallittuun kuvakansioon, vaan käyttäjä pystyy vaikuttamaan siihen mitä tiedostoa palvelin yrittää avata. Haavoittuvuus mahdollistaa muiden palvelimen tiedostojen lukemisen.
+
+Lähteet: https://portswigger.net/web-security/file-path-traversal/lab-absolute-path-bypass 
 
 <img width="2784" height="1904" alt="image" src="https://github.com/user-attachments/assets/d86aa94b-9c46-454e-8de6-207fb49547ad" />
 <img width="2784" height="1904" alt="image" src="https://github.com/user-attachments/assets/ef0fa7e7-edb8-459c-915e-d863d9f5a0ce" />
@@ -144,7 +149,10 @@ H) File path traversal, traversal sequences stripped non-recursively
 
 Tässä tehtävässä web sovellus koittaa sudoattaa käyttäjän lähettämästä polusta ../ tyyppiset traversal-sekvenssit pois, mutta suodatus tapahtuu vain kerran. Haavoittuvuus ZAP'issa löytyi kun katsoi tuotteen kuvan lataamiseen käytettyä filename -parametria ja kokeilemalla, miten palvelun käsittelee eri tiedosto polkuja tässä käytin portswiggerin ohjeistuksen mukaista "....//....//....//etc/passwd" merkkijonoa. Jos palvelin poistaa ../ sekvenssit, niin jöäkljelle jää uusia ../ -sekvenssejä koska syötettä ei käsitellä enää uudelleen. Tällä tavalla muodostunut polku mahdollistaa siirtymise hakemistopuussa ylöspäin ja /etc/passws tiedoston lukemisen. Haavoittuvuudelle syynä sen puutteellisen syötteen suodatus joka yrittää estää tietyn merkkijonon sen sijaan että lopullista tiedostopolun olevan sallittun hakemiston sisällä. 
 
+Lähteet: https://portswigger.net/web-security/file-path-traversal#what-is-path-traversal 
+         
+
 <img width="2784" height="1904" alt="image" src="https://github.com/user-attachments/assets/386b22ca-bf96-403e-82c6-bb3d25b28319" />
 
-Solved <img width="2784" height="1904" alt="image" src="https://github.com/user-attachments/assets/40de8b5f-131c-4ce7-b53b-dda8f10b775a" />
+<img width="2784" height="1904" alt="image" src="https://github.com/user-attachments/assets/40de8b5f-131c-4ce7-b53b-dda8f10b775a" />
 
