@@ -64,8 +64,35 @@ valvonta, hälytys ja poikkeamatilanteiden hallintaprosessit (incident response 
 10. Server-Side Request Forgery - Tilanne, jossa verkkosovellus hakee etäresurssin käyttäjän syöttämän URL-osoitteen perusteella ilman riittävää validointia. 
 Mahdollistaa sen, että hyökkääjä voi pakottaa palvelimen lähettämään räätälöityjä pyyntöjä odottamattomiin kohteisiin ja ohittamaan palomuurit
 sekä verkon suojaukset, mikä voi johtaa sisäverkon skannaamiseen, arkaluonteisten paikallisten tiedostojen lukemiseen tai pilvipalveluiden metadatan vaarantumiseen. 
-Yleisimmät ongelmat ja juurisyyt ovat käyttäjän URL-syötteisiin sokeasti luottaminen sekä puutteelliset verkkotason eristykset. Suojaudutaan segmentoimalla verkot 
+Yleisimpinä ongelmina ja syinä että käyttäjän URL-syötteisiin sokeasti luottaminen sekä puutteelliset verkkotason eristykset. Suojaudutaan segmentoimalla verkot 
 ja asettamalla palomuureihin tiukat oletuksena estävät (deny by default) säännöt, validoimalla kaikki syötteet yksinomaan positiivisella sallittujen listalla (allow list) 
-estolistojen (deny list) sijaan, estämällä HTTP-uudelleenohjaukset, sekä varmistamalla, ettei sovellus välitä sisäisten pyyntöjen raakavastauksia suoraan takaisin käyttäjälle.
+estolistojen (deny list) sijaan, estämällä HTTP-uudelleenohjaukset skeä varmistamalla, ettei sovellus välitä sisäisten pyyntöjen raakavastauksia suoraan takaisin käyttäjälle.
+
+11. Insecure direct object references (IDOR) - Pääsynhallinan haavoittuvuus joka syntyy kun verkkosovellus käyttää käyttäjä syöttämää dataa (tunnukset, ASNRO) suoraan
+viitatakseen taustajärjestelmän objekteihin ilman riittäviä käyttöoikeuksien tarkistusta. Mahdollistaa URL-osoitteen parametrin arvon muutoksen hyökkääjän toimesta, jolloin 
+toisten käyttäjien tietoihin pääseminen onnistuu ja toteuttamaan horisontaalista/vertikaalista oikeuksien korotusta (privilige escalation). Yleisimmät ongelmat ja juurisyyt ovat
+että sovellus luottaa täysin käyttäjän antamaan suoraan objektiviittaukseen varmistamatta, onko pyynnön esittäjällä todellista oikeutta resurssiin. Suojaudutaan varmistamalla
+aina palvelinpuolen koodissa että kirjautuneella käyttäjällä on oikeus pyydettyyn kohteeseen/dataan, riippumatta siitäm itä tunnisteita sovellluksessa käytetään.
+
+12. Path traversal - 
+
+13. Cross-site scripting XSS - 
+
+
 
 Lähteet: https://top10.owasp.org/2021/A05_2021-Security_Misconfiguration/ 
+         https://portswigger.net/web-security/access-control/idor
+         https://portswigger.net/web-security/file-path-traversal
+         https://portswigger.net/web-security/cross-site-scripting
+
+
+A) Totally Legit Certificate
+
+Lähdin etenemään Kalissa ajamalla sudo apt update ja sudo apt-get install zaproxy, jonka jälkeen sain zaproxyn auki. Tämän jälkeen avasin Tools --> Options ---> Network --->
+Server Certificates ja tallensin generoidun CA-sertifikaatin työpöydälle. Tämän jälkeen siirryin Firefoxiin importtaamaan certin itse selaimeen ja laittamaan proxyn päälle.
+Firefoxissa  siirryin asetusvalikon kautta Settings -kohtaan, hakukenttään "Certificates" ---> "View Certificates" ---> "Authorities" ja klikattiin "Import". Tämän jälkeen
+hain työpöydälle tallenetun certin, ja täppä kohtaan "Trust this CA to identify websites". 
+
+Proxy asetusten säätö firefoxissa hoitui "Settings" kohdasta "proxy", josta määritettiin manual proxy configuration. HTTP proxy kohtaan 127.0.0.1 ja kohtaan port 8080 ja
+vielä täppä ruutuun "Also use this proxy for HTTPS". Tämän jälkeen viimeinen kohta olikin kun osoiterivin about:config asetuksesta käytiin muuttamassa network.proxy.allow_hijacking_localhost
+kohta booleanin "true"-ksi. 
